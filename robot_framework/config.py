@@ -13,15 +13,9 @@ SCREENSHOT_SENDER = "robot@friend.dk"
 
 # Constant/Credential names
 ERROR_EMAIL = "Error Email"
+EVENT_LOG = "Event Log"
+BOLIGLAAN_CREDENTIALS = ""  # TODO
 
 
-# Queue specific configs
-# ----------------------
+QUEUE_NAME = "Boliglaan_indfriede_laan"
 
-# The name of the job queue (if any)
-QUEUE_NAME = None
-
-# The limit on how many queue elements to process
-MAX_TASK_COUNT = 100
-
-# ----------------------
