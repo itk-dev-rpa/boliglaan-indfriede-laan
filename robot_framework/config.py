@@ -14,7 +14,7 @@ SCREENSHOT_SENDER = "robot@friend.dk"
 # Constant/Credential names
 ERROR_EMAIL = "Error Email"
 EVENT_LOG = "Event Log"
-BOLIGLAAN_CREDENTIALS = ""  # TODO
+BOLIGLAAN_CREDENTIALS = "KMD Indfriede lån"
 
 
 QUEUE_NAME = "Boliglaan_indfriede_laan"
