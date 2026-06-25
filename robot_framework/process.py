@@ -140,7 +140,8 @@ def handle_case(cpr: str, case_number: str, advis_caseworkers: list[str]) -> str
 
 
 if __name__ == '__main__':
-    import os, uuid
+    import os
+    import uuid
     conn_string = os.getenv("OpenOrchestratorConnString")
     crypto_key = os.getenv("OpenOrchestratorKey")
     oc = OrchestratorConnection("Boliglån indfriede lån", conn_string, crypto_key, '{"advis_caseworkers":["AZ123456"]}', "trigger_id", uuid.uuid4())

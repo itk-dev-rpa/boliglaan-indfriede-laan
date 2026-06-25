@@ -18,4 +18,3 @@ BOLIGLAAN_CREDENTIALS = "KMD Indfriede lån"
 
 
 QUEUE_NAME = "Boliglaan_indfriede_laan"
-
