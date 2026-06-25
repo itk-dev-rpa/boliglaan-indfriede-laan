@@ -1,5 +1,6 @@
 """This module contains the main process of the robot."""
 
+import json
 import time
 from datetime import datetime
 
@@ -13,7 +14,6 @@ import itk_dev_event_log as event_log
 from robot_framework import config
 
 
-# pylint: disable-next=unused-argument
 def process(orchestrator_connection: OrchestratorConnection) -> None:
     """Do the primary process of the robot."""
     orchestrator_connection.log_trace("Running process.")
@@ -28,6 +28,9 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
     orchestrator_connection.log_info(f"Cases in list: {len(advis_list)}")
 
     for advis in advis_list:
+        if "Kautionslån" in advis.case_type:
+            continue
+
         queue_element = get_queue_element(advis.cpr, advis.case_number, orchestrator_connection)
         if not queue_element:
             orchestrator_connection.log_info("Skipping already handled case.")
@@ -62,8 +65,11 @@ def get_queue_element(cpr: str, case_number: str, orchestrator_connection: Orche
     return orchestrator_connection.create_queue_element(config.QUEUE_NAME, reference=reference, created_by="Robot")
 
 
-def handle_case(cpr: str, case_number: str) -> str | None:
+def handle_case(cpr: str, case_number: str, advis_caseworkers: list[str]) -> str | None:
     """Handle the given case.
+
+    Args:
+        advis_caseworkers: A list of caseworkers who's advis should be closed.
 
     If the case is skipped for any reason a message is returned.
     If the case is closed successfully None is returned.
@@ -106,7 +112,8 @@ def handle_case(cpr: str, case_number: str) -> str | None:
     rows = tab.PaneControl(AutomationId="dataPresenter", searchDepth=4).GetChildren()
     for row in rows:
         state_column_value_pattern: uiautomation.ValuePattern = row.CustomControl(foundIndex=4).GetPattern(uiautomation.PatternId.ValuePattern)
-        if state_column_value_pattern.Value == "UBEHANDLET":
+        created_by = row.CustomControl(foundIndex=5).GetPattern(uiautomation.PatternId.ValuePattern).Value
+        if state_column_value_pattern.Value == "UBEHANDLET" and created_by in advis_caseworkers:
             state_column_value_pattern.SetValue("FAERDIG")
 
     # Set case state
@@ -134,5 +141,5 @@ if __name__ == '__main__':
     import os, uuid
     conn_string = os.getenv("OpenOrchestratorConnString")
     crypto_key = os.getenv("OpenOrchestratorKey")
-    oc = OrchestratorConnection("Boliglån indfriede lån", conn_string, crypto_key, '{"approved_senders":["az57364"]}', "trigger_id", uuid.uuid4())
+    oc = OrchestratorConnection("Boliglån indfriede lån", conn_string, crypto_key, '{"advis_caseworkers":["AZ123456"]}', "trigger_id", uuid.uuid4())
     process(oc)
