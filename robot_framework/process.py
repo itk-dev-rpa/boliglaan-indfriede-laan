@@ -27,6 +27,8 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
     advis_list = search_advis.get_advis_list()
     orchestrator_connection.log_info(f"Cases in list: {len(advis_list)}")
 
+    advis_caseworkers = json.loads(orchestrator_connection.process_arguments)["advis_caseworkers"]
+
     for advis in advis_list:
         if "Kautionslån" in advis.case_type:
             continue
@@ -36,7 +38,7 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
             orchestrator_connection.log_info("Skipping already handled case.")
             continue
 
-        message = handle_case(advis.cpr, advis.case_number)
+        message = handle_case(advis.cpr, advis.case_number, advis_caseworkers)
 
         if message:
             orchestrator_connection.set_queue_element_status(queue_element.id, QueueStatus.DONE, message=f"Skipped: {message}")
