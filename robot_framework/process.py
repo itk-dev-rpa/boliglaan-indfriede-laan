@@ -24,6 +24,9 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
     boliglaan.pin_sidebar()
     search_advis.search_advis(types=["Lånets saldo = 0 kr."])
 
+    # Search is slow
+    time.sleep(5)
+
     advis_list = search_advis.get_advis_list()
     orchestrator_connection.log_info(f"Cases in list: {len(advis_list)}")
 
@@ -134,7 +137,7 @@ def handle_case(cpr: str, case_number: str, advis_caseworkers: list[str]) -> str
     boliglaan.save_case()
 
     # Give Boliglån a little breathing room
-    time.sleep(2)
+    time.sleep(5)
 
     return None
 
