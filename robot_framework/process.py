@@ -121,17 +121,26 @@ def handle_case(cpr: str, case_number: str, advis_caseworkers: list[str]) -> str
         if state_column_value_pattern.Value == "UBEHANDLET" and created_by in advis_caseworkers:
             state_column_value_pattern.SetValue("FAERDIG")
 
-    # Set case state
+    # Set case state to "Indfriet"
     tab = boliglaan.select_tab("Låneafvikling")
     group = tab.GroupControl(Name="Lån status", searchDepth=4)
 
-    # Find the midpoint between the column header and the first row
-    rect = group.HeaderItemControl(Name="Status").BoundingRectangle
-    uiautomation.Click(x=rect.xcenter(), y=rect.ycenter()+rect.height())
+    # Check if already indfriet
+    indfriet = False
+    status_rows = group.PaneControl(AutomationId="dataPresenter", searchDepth=2)
+    for row in status_rows.GetChildren():
+        if row.CustomControl(foundIndex=2).GetPattern(uiautomation.PatternId.ValuePattern).Value == "INDFRIET":
+            indfriet = True
+            break
 
-    # Select 'Indfriet'
-    popup = boliglaan_window.WindowControl(searchDepth=1)
-    popup.TextControl(Name="Indfriet").GetParentControl().Click(simulateMove=False)
+    if not indfriet:
+        # Find the midpoint between the column header and the first row and click there
+        rect = group.HeaderItemControl(Name="Status").BoundingRectangle
+        uiautomation.Click(x=rect.xcenter(), y=rect.ycenter()+rect.height())
+
+        # Select 'Indfriet'
+        popup = boliglaan_window.WindowControl(searchDepth=1)
+        popup.TextControl(Name="Indfriet").GetParentControl().Click(simulateMove=False)
 
     # Save
     boliglaan.save_case()
