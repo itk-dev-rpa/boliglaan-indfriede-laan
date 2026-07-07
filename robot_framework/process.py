@@ -106,11 +106,9 @@ def handle_case(cpr: str, case_number: str, advis_caseworkers: list[str]) -> str
     group = tab.GroupControl(Name="Opkrævninger", searchDepth=4)
     pane = group.PaneControl(AutomationId="dataPresenter")
     for row in pane.GetChildren():
-        type_ = row.CustomControl(foundIndex=2).GetPattern(uiautomation.PatternId.ValuePattern).Value
-        if type_ == "IBERO":
-            date_str = row.CustomControl(foundIndex=1).GetPattern(uiautomation.PatternId.ValuePattern).Value
-            if datetime.strptime(date_str, "%d-%m-%Y") > datetime.today():
-                return "'I bero' on a future date"
+        date_str = row.CustomControl(foundIndex=1).GetPattern(uiautomation.PatternId.ValuePattern).Value
+        if datetime.strptime(date_str, "%d-%m-%Y") > datetime.today():
+            return "'Opkrævning' on a future date"
 
     # Handle advis
     tab = boliglaan.select_tab("Advis")
