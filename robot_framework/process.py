@@ -36,8 +36,8 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
             popup.ButtonControl().GetInvokePattern().Invoke()
             orchestrator_connection.log_info("No tasks in search result.")
             return
-        else:
-            raise RuntimeError("Unknown popup!")
+
+        raise RuntimeError("Unknown popup!")
 
     advis_list = search_advis.get_advis_list()
     orchestrator_connection.log_info(f"Cases in list: {len(advis_list)}")
