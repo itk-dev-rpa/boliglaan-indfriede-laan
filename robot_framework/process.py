@@ -20,12 +20,24 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
 
     event_log.setup_logging(orchestrator_connection.get_constant(config.EVENT_LOG).value)
 
-    boliglaan.get_boliglaan().Maximize()
+    boliglaan_window = boliglaan.get_boliglaan()
+
+    boliglaan.Maximize()
     boliglaan.pin_sidebar()
     search_advis.search_advis(types=["Lånets saldo = 0 kr."])
 
     # Search is slow
     time.sleep(5)
+
+    # Check for no-results popup
+    popup = boliglaan_window.WindowControl(searchDepth=2, Name="Information")
+    if popup.Exists():
+        if popup.TextControl().Name == "Der blev ikke fundet data ud fra de angivne kriterier.":
+            popup.ButtonControl().GetInvokePattern().Invoke()
+            orchestrator_connection.log_info("No tasks in search result.")
+            return
+        else:
+            raise RuntimeError("Unknown popup!")
 
     advis_list = search_advis.get_advis_list()
     orchestrator_connection.log_info(f"Cases in list: {len(advis_list)}")
