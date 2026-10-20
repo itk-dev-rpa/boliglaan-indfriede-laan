@@ -22,7 +22,7 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
 
     boliglaan_window = boliglaan.get_boliglaan()
 
-    boliglaan.Maximize()
+    boliglaan_window.Maximize()
     boliglaan.pin_sidebar()
     search_advis.search_advis(types=["Lånets saldo = 0 kr."])
 
